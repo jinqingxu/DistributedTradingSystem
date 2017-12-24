@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+<hibernate-mapping package="com.module.bean">
+    <class name="com.module.bean.CancelOrder" table="tr_cancelorder">
+        <id name="id" column="id" type="int">
+            <generator class="native"></generator>
+        </id>
+        <!--标价-->
+
+        <!--下单时间-->
+        <property name="time" column="t_time" type="timestamp"/>
+        <property name="traderorderid" column="trorderid" type="java.lang.Integer"></property>
+        <!--foreign key-->
+        <many-to-one name="cancelorder" class="Order" column="cancelorderid" ></many-to-one>
+    </class>
+
+
+
+
+
+</hibernate-mapping>

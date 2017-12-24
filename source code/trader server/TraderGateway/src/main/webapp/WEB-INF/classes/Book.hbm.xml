@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping
+        PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="com.module.bean">
+
+    <class name="Book" table="book"  catalog="mydb">
+
+        <id name="id" column="id" type="int">
+            <generator class="native"></generator>
+        </id>
+
+        <property name="bookname" column="bookname" type="string"></property>
+        <property name="price" column="price" type="double"></property>
+        <property name="category" column="category" type="string"></property>
+        <property name="stockbalance" column="stockbalance" type="int"></property>
+        <property name="publishhouse" column="publishhouse" type="string"></property>
+        <property name="photopath" column="photopath" type="string"></property>
+        <property name="description" column="description" type="string"></property>
+        <set name="orderitems" lazy="false" inverse="true" cascade="delete" >
+
+            <key column="orderid"></key>
+
+            <one-to-many class="Orderitem"/>
+        </set>
+    </class>
+
+</hibernate-mapping>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+<hibernate-mapping package="com.module.bean">
+    <class name="com.module.bean.Product" table="product">
+        <id name="id" column="id" type="int">
+            <generator class="native"></generator>
+        </id>
+
+        <property name="code" column="code" type="string"/>
+
+        <property name="listingDate" column="listingDate" type="timestamp"/>
+
+        <property name="deliveryDate" column="deliveryDate" type="timestamp"/>
+
+        <property name="productName" column="productName" type="string"/>
+        <property name="category1" column="category1" type="string"/>
+        <property name="category2" column="category2" type="string"/>
+       
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+<hibernate-mapping package="com.module.bean">
+	<class name="com.module.bean.Transaction" table="tr_transaction">
+		<id name="id" column="id">
+			<generator class="increment"/>
+		</id>
+		<!--成交价-->
+		<property name="price" column="price" type="double"/>
+		<!--成交数-->
+		<property name="number" column="number" type="int"/>
+		<property name="firmname" column="firmname" type="string"></property>
+		<many-to-one name="myorder" column="orderid" lazy="false" cascade="save-update" ></many-to-one>
+		<!--成交时间-->
+		<property name="time" column="t_time" type="timestamp"/>
+	</class>
+</hibernate-mapping>

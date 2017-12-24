@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jaxws="http://cxf.apache.org/jaxws"
+       xmlns:soap="http://cxf.apache.org/bindings/soap"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+     http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+     http://www.springframework.org/schema/data/mongo
+          http://www.springframework.org/schema/data/mongo/spring-mongo-1.0.xsd
+     http://www.springframework.org/schema/context
+     http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:component-scan base-package="com.module.jms"/>
+    <context:component-scan base-package="com.module.restful"/>
+    <context:annotation-config/>
+
+    <!--MongoDB-->
+    <!--context:property-placeholder location="classpath:/MongoDB.properties" />
+    <mongo:mongo id="mongo" host="${mongo.host}" port="${mongo.port}"-->
+        <!-- 一些连接属性的设置 -->
+        <!--mongo:options
+                connections-per-host="${mongo.connectionsPerHost}"
+                threads-allowed-to-block-for-connection-multiplier="${mongo.threadsAllowedToBlockForConnectionMultiplier}"
+                connect-timeout="${mongo.connectTimeout}"
+                max-wait-time="${mongo.maxWaitTime}"
+                auto-connect-retry="${mongo.autoConnectRetry}"
+                socket-keep-alive="${mongo.socketKeepAlive}"
+                socket-timeout="${mongo.socketTimeout}"
+                slave-ok="true"
+                write-number="1"
+                write-timeout="0"
+                write-fsync="true" />
+    </mongo:mongo>
+    <mongo:db-factory id="mongoDbFactory" dbname="traderdb" mongo-ref="mongo" />
+
+
+    <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+        <constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
+    </bean-->
+    <!--end MongoDB-->
+
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+        <property name="url" value="jdbc:mysql://localhost:3306/traderdb"></property>
+        <property name="username" value="trader"></property>
+        <property name="password" value="123456"></property>
+        <property name="maxActive" value="100"></property>
+        <property name="defaultAutoCommit" value="true"></property>
+    </bean>
+
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+
+        <property name="dataSource" ref="dataSource"></property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+                <prop key="hibernate.show_sql">true</prop>
+            </props>
+        </property>
+        <property name="mappingResources">
+            <list>
+                <value>Broker.hbm.xml</value>
+                <value>Order.hbm.xml</value>
+                <value>Product.hbm.xml</value>
+                <value>Trader.hbm.xml</value>
+                <value>Transaction.hbm.xml</value>
+                <value>Firm.hbm.xml</value>
+                <value>CancelOrder.hbm.xml</value>
+                <value>PriceRecord.hbm.xml</value>
+            </list>
+
+        </property>
+    </bean>
+<bean id="brokerDao" class="com.module.dao.daoimpl.BrokerDAOImpl" >
+    <property name="sessionFactory" ref="sessionFactory"></property>
+</bean>
+    <bean id="orderDao" class="com.module.dao.daoimpl.OrderDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"></property>
+    </bean>
+    <bean id="cancelOrderDao" class="com.module.dao.daoimpl.CancelOrderDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"></property>
+    </bean>
+    <bean id="productDao" class="com.module.dao.daoimpl.ProductDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"></property>
+    </bean>
+    <bean id="traderDao" class="com.module.dao.daoimpl.TraderDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"></property>
+    </bean>
+    <bean id="transactionDao" class="com.module.dao.daoimpl.TransactionDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"></property>
+    </bean>
+    <bean id="priceRecordDao" class="com.module.dao.daoimpl.PriceRecordDaoImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    <bean id="brokerService" class="com.module.service.serviceimpl.BrokerServiceImpl">
+        <property name="brokerDAO" ref="brokerDao"></property>
+    </bean>
+    <bean id="priceRecordService" class="com.module.service.serviceimpl.PriceRecordServiceImpl">
+        <property name="priceRecordDao" ref="priceRecordDao"/>
+    </bean>
+
+    <bean id="redisService" class="com.module.util.RedisServiceImpl">
+
+    </bean>
+    <bean id="processStopOrderThread" class="com.module.thread.ProcessStopOrderThread">
+        <property name="redisService" ref="redisService"></property>
+        <property name="brokerService" ref="brokerService"></property>
+    </bean>
+
+    <bean id="vampThread" class="com.module.thread.VampThread">
+        <property name="orderService" ref="orderService"></property>
+    </bean>
+    <bean id="orderService" class="com.module.service.serviceimpl.OrderServiceImpl">
+        <property name="orderDAO" ref="orderDao"></property>
+        <property name="redisService" ref="redisService"></property>
+    </bean>
+    <bean id="cancelOrderService" class="com.module.service.serviceimpl.CancelOrderServiceImpl">
+        <property name="cancelOrderDAO" ref="cancelOrderDao"></property>
+    </bean>
+     <bean id="productService" class="com.module.service.serviceimpl.ProductServiceImpl">
+         <property name="productDAO" ref="productDao"></property>
+     </bean>
+    <bean id="traderService" class="com.module.service.serviceimpl.TraderServiceImpl">
+        <property name="traderDAO" ref="traderDao"></property>
+    </bean>
+    <bean id="transactionService" class="com.module.service.serviceimpl.TransactionServiceImpl">
+      <property name="transactionDAO" ref="transactionDao"></property>
+    </bean>
+    <bean id="loginAction" class="com.module.action.TestDaoAction">
+       <property name="orderService" ref="orderService"></property>
+        <property name="transactionService" ref="transactionService"></property>
+        <property name="brokerService" ref="brokerService"></property>
+        <property name="productService" ref="productService"></property>
+        <property name="traderService" ref="traderService"></property>
+        <property name="cancelOrderService" ref="cancelOrderService"></property>
+        <property name="processStopOrderThread" ref="processStopOrderThread"></property>
+    </bean>
+
+    <!--redis config-->
+    <context:property-placeholder location="classpath:/redis.properties" />
+    <bean id="redisUtil" class="com.module.util.RedisUtil">
+        <property name="addr" value="${redis.addr}"/>
+        <property name="port" value="${redis.port}"/>
+        <property name="auth" value="${redis.auth}"/>
+        <property name="maxIdle" value="${redis.maxIdle}"/>
+        <property name="maxActive" value="${redis.maxActive}"/>
+        <property name="maxWait" value="${redis.maxWait}"/>
+        <property name="timeOut" value="${redis.timeOut}"/>
+        <property name="testOnBorrow" value="${redis.testOnBorrow}"/>
+    </bean>
+
+    <!--JMS-->
+    <bean id="startListener" class="com.module.jms.listener.StartListener">
+        <property name="brokerService" ref="brokerService"/>
+    </bean>
+    <bean id="queueListener" class="com.module.jms.listener.QueueListener">
+        <property name="transactionService" ref="transactionService"/>
+        <property name="orderService" ref="orderService"/>
+    </bean>
+
+
+</beans>

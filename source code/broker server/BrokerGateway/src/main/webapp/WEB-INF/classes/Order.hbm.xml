@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+<hibernate-mapping package="com.module.bean">
+	<class name="com.module.bean.Order" table="br_order">
+		<id name="id" column="id" type="int">
+			<generator class="native"></generator>
+		</id>
+		<!--标价-->
+		<property name="given_price" column="t_given_price" type="double"/>
+		<!--order类型：marketOrder/limitOrder/cancelOrder-->
+		<property name="type" column="t_type" type="int"/>
+		<!--买方卖方：ask/bid -->
+		<property name="type_possession" column="t_possession" type="string"/>
+		<!--下单数目-->
+		<property name="number" column="t_number" type="int"/>
+		<!--未交易数目-->
+		<property name="left_number" column="t_left_number" type="int"/>
+		<!--下单时间-->
+		<property name="time" column="t_time" type="timestamp"/>
+		<!--状态-->
+		<property name="status" column="t_status" type="string"/>
+		<property name="version" column="t_version" type="int"></property>
+		<property name="trorderid" column="t_traderorderid" type="int"></property>
+		<!--<property name="productCode" column="t_productCode" type="string"/>-->
+		<!--<property name="firm" column="t_firm" type="string"/>-->
+
+		<!--foreign key-->
+		<many-to-one name="firm" column="t_firm" class="Firm" lazy="false" cascade="save-update"></many-to-one>
+
+		<many-to-one name="productCode" column="t_productCode" class="Product" lazy="false" cascade="save-update"></many-to-one>
+
+
+
+	</class>
+</hibernate-mapping>
